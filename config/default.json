@@ -1,0 +1,3 @@
+{
+  "mongoURI": "mongodb+srv://luke_DB_user:lukefox123@mern-app-8cor1.mongodb.net/test?retryWrites=true&w=majority"
+}
