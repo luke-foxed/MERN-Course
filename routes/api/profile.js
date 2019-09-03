@@ -1,12 +1,12 @@
-const express = require("express");
-const request = require("request");
-const config = require("config");
+const express = require('express');
+const request = require('request');
+const config = require('config');
 const router = express.Router();
-const auth = require("../../middleware/auth");
-const { check, validationResult } = require("express-validator");
+const auth = require('../../middleware/auth');
+const { check, validationResult } = require('express-validator');
 
-const Profile = require("../../models/Profile");
-const User = require("../../models/User");
+const Profile = require('../../models/Profile');
+const User = require('../../models/User');
 
 /**
 @route   GET api/profile/me
@@ -14,19 +14,19 @@ const User = require("../../models/User");
 @access  Private
  */
 
-router.get("/me", auth, async (req, res) => {
+router.get('/me', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id }).populate(
-      "user",
-      ["name", "avatar"] // populate name & avatar from the user collection
+      'user',
+      ['name', 'avatar'] // populate name & avatar from the user collection
     );
 
     if (!profile) {
-      return res.status(400).json({ msg: "There is no profile for this user" });
+      return res.status(400).json({ msg: 'There is no profile for this user' });
     }
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -37,15 +37,15 @@ router.get("/me", auth, async (req, res) => {
 */
 
 router.post(
-  "/",
+  '/',
   [
     // two pieces of middleware, the auth and the check
     auth,
     [
-      check("status", "Status is required")
+      check('status', 'Status is required')
         .not()
         .isEmpty(),
-      check("skills", "Skills is required")
+      check('skills', 'Skills is required')
         .not()
         .isEmpty()
     ]
@@ -81,7 +81,7 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills.split(",").map(skill => skill.trim());
+      profileFields.skills = skills.split(',').map(skill => skill.trim());
     }
 
     profileFields.social = {};
@@ -110,7 +110,7 @@ router.post(
       res.json(profile);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).send('Server Error');
     }
   }
 );
@@ -121,13 +121,13 @@ router.post(
 @access  Public
 */
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const profiles = await Profile.find().populate("user", ["name", "avatar"]);
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
     res.json(profiles);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -137,21 +137,21 @@ router.get("/", async (req, res) => {
 @access  Public 
 */
 
-router.get("/user/:user_id", async (req, res) => {
+router.get('/user/:user_id', async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.params.user_id
-    }).populate("user", ["name", "avatar"]);
+    }).populate('user', ['name', 'avatar']);
 
-    if (!profile) return res.status(400).json({ msg: "Profile not found" });
+    if (!profile) return res.status(400).json({ msg: 'Profile not found' });
 
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    if (err.kind === "ObjectId") {
-      return res.status(400).json({ msg: "Profile not found" });
+    if (err.kind === 'ObjectId') {
+      return res.status(400).json({ msg: 'Profile not found' });
     }
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -161,14 +161,14 @@ router.get("/user/:user_id", async (req, res) => {
   @access Private
 */
 
-router.delete("/", auth, async (req, res) => {
+router.delete('/', auth, async (req, res) => {
   try {
     await Profile.findOneAndRemove({ user: req.user.id });
     await User.findOneAndRemove({ _id: req.user.id });
-    res.json({ msg: "User deleted" });
+    res.json({ msg: 'User deleted' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -179,17 +179,17 @@ router.delete("/", auth, async (req, res) => {
 */
 
 router.put(
-  "/experience",
+  '/experience',
   [
     auth,
     [
-      check("title", "Title is required")
+      check('title', 'Title is required')
         .not()
         .isEmpty(),
-      check("company", "Company is required")
+      check('company', 'Company is required')
         .not()
         .isEmpty(),
-      check("from", "From date is required")
+      check('from', 'From date is required')
         .not()
         .isEmpty()
     ]
@@ -219,7 +219,7 @@ router.put(
       res.json(profile);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).send('Server Error');
     }
   }
 );
@@ -230,7 +230,7 @@ router.put(
 @access  Private
 */
 
-router.delete("/experience/:exp_id", auth, async (req, res) => {
+router.delete('/experience/:exp_id', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
     const removeIndex = profile.experience
@@ -243,7 +243,7 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -254,20 +254,20 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
 */
 
 router.put(
-  "/education",
+  '/education',
   [
     auth,
     [
-      check("school", "School is required")
+      check('school', 'School is required')
         .not()
         .isEmpty(),
-      check("degree", "Degree is required")
+      check('degree', 'Degree is required')
         .not()
         .isEmpty(),
-      check("fieldofstudy", "Field of study is required")
+      check('fieldofstudy', 'Field of study is required')
         .not()
         .isEmpty(),
-      check("from", "From date is required")
+      check('from', 'From date is required')
         .not()
         .isEmpty()
     ]
@@ -305,7 +305,7 @@ router.put(
       res.json(profile);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).send('Server Error');
     }
   }
 );
@@ -316,7 +316,7 @@ router.put(
 @access  Private
 */
 
-router.delete("/education/:edu_id", auth, async (req, res) => {
+router.delete('/education/:edu_id', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
     const removeIndex = profile.education
@@ -329,7 +329,7 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
@@ -339,30 +339,30 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
 @access  Public
 */
 
-router.get("/github/:username", (req, res) => {
+router.get('/github/:username', (req, res) => {
   try {
     const options = {
       uri: `https://api.github.com/users/${
         req.params.username
       }/repos?per_page=5&sort=created:asc&client_id=${config.get(
-        "githubClientID"
-      )}&client_secret=${config.get("githubSecret")}`,
-      method: "GET",
-      headers: { "user-agent": "node.js" } // causing issues without this
+        'githubClientID'
+      )}&client_secret=${config.get('githubSecret')}`,
+      method: 'GET',
+      headers: { 'user-agent': 'node.js' } // causing issues without this
     };
 
     request(options, (error, response, body) => {
       if (error) console.log(error);
 
       if (response.statusCode !== 200) {
-        return res.status(404).json({ msg: "No GitHub profile found!" });
+        return res.status(404).json({ msg: 'No GitHub profile found!' });
       }
 
       res.json(JSON.parse(body));
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).send('Server Error');
   }
 });
 
