@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://luke_DB_user:lukefox123@mern-app-8cor1.mongodb.net/test?retryWrites=true&w=majority",
-  "jwtSecret": "mysecrettoken"
+  "jwtSecret": "mysecrettoken",
+  "githubClientID": "c299fe0a79a352ee23af",
+  "githubSecret": "29671158a7a18729307266fd2f73ee515f7df094"
 }
