@@ -1,7 +1,14 @@
 import React, { Fragment, useState } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { setAlert } from '../../actions/alert';
+import PropTypes from 'prop-types';
 
-const Register = () => {
+/* Instead of passing props and using props.setAlert, 
+we can instead de-structure props to just use setAlert */
+
+const Register = ({ setAlert }) => {
+  // formData is the state and setFormData is the function to update the state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,7 +25,7 @@ const Register = () => {
   const onSubmit = async e => {
     e.preventDefault();
     if (password !== password2) {
-      console.log('Passwords do not match');
+      setAlert('Passwords do not match', 'danger');
     } else {
       console.log('Success');
     }
@@ -84,4 +91,12 @@ const Register = () => {
   );
 };
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired
+};
+
+// exporting via connect makes it available in the props above
+export default connect(
+  null,
+  { setAlert }
+)(Register);
